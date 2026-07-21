@@ -69,7 +69,7 @@ One of the challenges faced during the development of this project was creating 
 - Neha Phadtare
 - Uddesh Jaiswal
 
-# Deployed Link :- https://daily-essential-koushikniyogi.vercel.app/](https://daily-objects-clone-slkl.vercel.app
+# Deployed Link :- https://daily-objects-clone-slkl.vercel.app
 
 # screenshot
 
