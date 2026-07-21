@@ -22,8 +22,11 @@ const WishListCard = ({product}) => {
     }
 
     const handleDelete = (id)=>{
+     const userId = Array.isArray(user) && user.length > 0 ? user[0]._id : (user?._id || null);
      dispatch(deleteWishlistItem(token,id))
-     .then(res=>dispatch(getWishListItems(token,user.userId)))
+     .then(res=> {
+       if (userId) dispatch(getWishListItems(token, userId));
+     })
     }
   return (
     <Card

@@ -1,4 +1,5 @@
 import axios from "axios"
+import { BASE_URL } from "../../apiConfig"
 import{
     CART_FAILURE,
     CART_REQUEST,
@@ -17,7 +18,7 @@ export const getSingleProduct =(id)=>(dispatch)=>{
       dispatch({ type: CART_REQUEST });
       axios({
         method: 'get',
-        url: `https://pajamas-bonobo.cyclic.app/product/singleproduct/${id}`,
+        url: `${BASE_URL}/product/singleproduct/${id}`,
       })
         .then((res) => {
           console.log(res)
@@ -39,7 +40,7 @@ export const addProductCart = (token, item, toast) => (dispatch) => {
   dispatch({ type: CART_REQUEST});
   axios({
     method: 'post',
-    url: `https://pajamas-bonobo.cyclic.app/cart/add`,
+    url: `${BASE_URL}/cart/add`,
     data: data,
     headers: headers
   })
@@ -71,7 +72,7 @@ export const GetAllCartProductsAction = (token,id) => (dispatch)  => {
   dispatch({ type: CART_REQUEST });
   axios({
     method: 'GET',
-    url: `https://pajamas-bonobo.cyclic.app/cart`,
+    url: `${BASE_URL}/cart`,
     data:{
       userId
     },
@@ -100,7 +101,7 @@ export const deleteCartProductAction =(token,id)=>(dispatch)=>{
 
   return axios({
     method: 'delete',
-    url: `https://pajamas-bonobo.cyclic.app/cart/delete/${id}`,
+    url: `${BASE_URL}/cart/delete/${id}`,
     headers: headers
   })
     .then((res) => {
@@ -126,7 +127,7 @@ export const UpdateCartProductAction = (token,val, id)=>(dispatch)=>{
   dispatch({type:  CART_REQUEST})
   return axios({
     method: 'patch',
-    url: `https://pajamas-bonobo.cyclic.app/cart/update/${id}`,
+    url: `${BASE_URL}/cart/update/${id}`,
     data: data,
     headers: headers
   })
@@ -141,5 +142,23 @@ export const UpdateCartProductAction = (token,val, id)=>(dispatch)=>{
   
 }
 
-
-// https://pajamas-bonobo.cyclic.app/cart
+export const clearCartAction = (token, id) => (dispatch) => {
+  const headers = { Authorization: `${token}` };
+  dispatch({ type: CART_REQUEST });
+  return axios({
+    method: 'delete',
+    url: `${BASE_URL}/cart/clear`,
+    data: { userId: id },
+    headers: headers
+  })
+    .then((res) => {
+      dispatch({ type: GET_CART_PRODUCTS_SUCCESS, payload: [] });
+      localStorage.removeItem("Cart");
+      localStorage.removeItem("orderSummary");
+    })
+    .catch((err) => {
+      dispatch({ type: GET_CART_PRODUCTS_SUCCESS, payload: [] });
+      localStorage.removeItem("Cart");
+      localStorage.removeItem("orderSummary");
+    });
+};

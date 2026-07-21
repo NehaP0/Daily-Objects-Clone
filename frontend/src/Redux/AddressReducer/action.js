@@ -1,6 +1,6 @@
 import { ADDRESS_REQUEST_FAILURE, ADDRESS_REQUEST_PENDING, POST_ADDRESS_SUCCESS } from "./actionTypes"
 import axios from 'axios'
-//put the url
+import { BASE_URL } from "../../apiConfig"
 
 export const addAddressAction = (token,addressobj, id) => (dispatch) =>{
     console.log(addressobj,id);
@@ -14,7 +14,7 @@ export const addAddressAction = (token,addressobj, id) => (dispatch) =>{
 
     return axios({
         method: 'PATCH',
-        url: `https://pajamas-bonobo.cyclic.app/user/updateaddress/${id}`,
+        url: `${BASE_URL}/user/updateaddress/${id}`,
         data: address,
         headers: headers
       })

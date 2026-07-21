@@ -18,10 +18,10 @@ const HomePage = () => {
       >
         <Navbar />
       </Flex>
-      <Box as="main">
+      <Box as="main" pt={{ base: "65px", md: "70px" }}>
         <Box width="90%" margin="auto">
           <Link to={"/products"}>
-            <Image src="https://images.dailyobjects.com/marche/assets/images/other/offer-baners-updated-homepage-desktop.jpg?tr=cm-pad_crop,v-2,dpr-1" />
+            <Image src="https://images.dailyobjects.com/marche/assets/images/other/offer-baners-updated-homepage-desktop.jpg?tr=cm-pad_crop,v-2,dpr-1" borderRadius="16px" mt={1} />
           </Link>
         </Box>
         <Box width="100%">
@@ -202,14 +202,6 @@ const HomePage = () => {
           </Box>
           <Box width={["100%", "100%", "45%", "45%"]}>
             <Image src="https://images.dailyobjects.com/marche/assets/images/other/Our-Story-updated01.jpg?tr=cm-pad_crop,v-2,dpr-1" />
-          </Box>
-        </Box>
-        <Box width="100%" padding="4%">
-          <Heading as="h2" className="h2" fontSize="140%">
-            FEATURED IN
-          </Heading>
-          <Box width="100%">
-            <Image src="https://images.dailyobjects.com/marche/icons/press-desktop.png?tr=cm-pad_resize,v-2,dpr-1" />
           </Box>
         </Box>
         <Box>

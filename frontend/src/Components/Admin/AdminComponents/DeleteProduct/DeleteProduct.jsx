@@ -13,6 +13,7 @@ import {
   useToast,
 } from "@chakra-ui/react";
 import axios from "axios";
+import { BASE_URL } from "../../../../apiConfig";
 
 function DeleteProduct({ id, getData }) {
   let _id = id;
@@ -49,7 +50,7 @@ function DeleteProduct({ id, getData }) {
       };
 
       const response = await axios.delete(
-        `https://pajamas-bonobo.cyclic.app/product/delete/${_id}`,
+        `${BASE_URL}/product/delete/${_id}`,
         config
       );
 

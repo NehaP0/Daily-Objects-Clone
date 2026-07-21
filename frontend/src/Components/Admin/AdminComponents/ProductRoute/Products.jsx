@@ -9,6 +9,7 @@ import {
 } from "@chakra-ui/react";
 
 import axios from "axios";
+import { BASE_URL } from "../../../../apiConfig";
 
 import Productcard from "../Card/Productcard";
 
@@ -47,7 +48,7 @@ export default function Products() {
   const getData = (page) => {
     setStatus(false);
     axios
-      .get(`https://pajamas-bonobo.cyclic.app/product`)
+      .get(`${BASE_URL}/product`)
       .then((res) => {
         console.log(res);
         setData(res.data.Data);

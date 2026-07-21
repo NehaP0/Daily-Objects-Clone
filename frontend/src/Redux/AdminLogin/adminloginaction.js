@@ -1,4 +1,5 @@
 import axios from "axios";
+import { BASE_URL } from "../../apiConfig";
 import {
   LOGIN_FAILURE,
   LOGIN_REQUEST,
@@ -31,7 +32,7 @@ export const login = (userData,toast) => (dispatch) => {
   dispatch(loginRequest());
 
   return axios
-    .post(`https://pajamas-bonobo.cyclic.app/admin/login`, userData)
+    .post(`${BASE_URL}/admin/login`, userData)
     .then((res) => {
       console.log(res);
       toast({

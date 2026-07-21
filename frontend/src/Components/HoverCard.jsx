@@ -29,8 +29,8 @@ const HoverCard = (props) => {
         justifyContent="space-between"
         height="400px"
       >
-        {techarr.map((ele) => (
-          <MenuItem width="13%" display="block" textAlign="center">
+        {techarr.map((ele, index) => (
+          <MenuItem key={ele.imgurl || index} width="13%" display="block" textAlign="center">
             <Link to="/products">
               <Image src={ele.imgurl} width="100%" />
               <HoverCardSubMenu menuarr={ele.item} />

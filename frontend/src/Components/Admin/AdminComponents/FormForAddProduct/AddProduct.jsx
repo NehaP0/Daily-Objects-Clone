@@ -22,6 +22,7 @@ import { Link as RouterLink } from "react-router-dom";
 
 import Navbar from "../../Navbar";
 import { useSelector } from "react-redux";
+import { BASE_URL } from "../../../../apiConfig";
 
 const AddProduct = () => {
   const [title, setTitle] = useState("");
@@ -76,7 +77,7 @@ const AddProduct = () => {
     console.log(products);
     axios({
       method: "POST",
-      url: `https://pajamas-bonobo.cyclic.app/product/add`,
+      url: `${BASE_URL}/product/add`,
       data: products,
       headers: {
         Authorization: `${localStorage.getItem("adminToken")}`,

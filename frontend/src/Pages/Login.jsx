@@ -34,8 +34,14 @@ const LoginPage = () => {
     const { name, value } = e.target;
     setData({ ...data, [name]: value });
   };
-  let tokendata = JSON.parse(localStorage.getItem("token")) || [];
-  let userId = JSON.parse(localStorage.getItem("userid")) || "";
+  let tokendata = (() => {
+    try { return JSON.parse(localStorage.getItem("token")) || []; }
+    catch { return localStorage.getItem("token") || []; }
+  })();
+  let userId = (() => {
+    try { return JSON.parse(localStorage.getItem("userid")) || ""; }
+    catch { return localStorage.getItem("userid") || ""; }
+  })();
   const location = useLocation();
   const navigate = useNavigate();
 

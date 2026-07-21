@@ -26,6 +26,7 @@ import Logo from "./images/daily_e.png";
 import AdminHamMenu from "./AdminComponents/AdminDrawer/AdminDrawer";
 import { useDispatch, useSelector } from "react-redux";
 import { logoutUser } from "../../Redux/AdminLogin/adminloginaction";
+import { BASE_URL } from "../../apiConfig";
 const Links = [""];
 
 const NavLink = ({ children }) => (
@@ -68,13 +69,11 @@ const Navbar = () => {
     nevigate("/adminlogin");
   };
 
-  //   https://awful-pear-bedclothes.cyclic.app/
-
   const getData = (page) => {
     setStatus(false);
     axios
       .get(
-        `https://awful-pear-bedclothes.cyclic.app/api/products?keyword=${text}&page=${page}`
+        `${BASE_URL}/product/search?q=${text}`
       )
       .then((res) => {
         // console.log(res)

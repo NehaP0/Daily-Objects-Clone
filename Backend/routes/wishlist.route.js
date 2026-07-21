@@ -5,10 +5,9 @@ const wishlistModel = require("../models/wishlist.model");
 const wishlistRoute = express.Router()
 
 wishlistRoute.get("/", async (req, res) => {
-    let userId = req.body;
-    console.log(userId);
+    const userId = req.body.userId;
     try {
-        const data = await wishlistModel.find(userId)
+        const data = await wishlistModel.find({ userId })
         res.send({ Data: data });
     } catch (e) {
         console.log(e)

@@ -50,7 +50,7 @@ userRouter.post("/login", async (req, res) => {
         if (User.length > 0) {
             bcrypt.compare(password, User[0].password, (err, result) => {
                 if (result) {
-                    let token = jwt.sign({ userId: User[0]._id }, "tough-requestUYJHMN¥");
+                    let token = jwt.sign({ userId: User[0]._id }, "tough-request");
                     res.status(200).send({ msg: `Login Success ! WelcomeBack ${User[0].name}`, token: token,user:User});
                 } else {
                     res.status(404).send({ msg: "Wrong Password" })
@@ -61,6 +61,44 @@ userRouter.post("/login", async (req, res) => {
         }
     } catch (e) {
         res.status(404).send({ msg: "Error", reason: e.message })
+    }
+})
+
+userRouter.patch("/updateaddress/:id", async (req, res) => {
+    const id = req.params.id;
+    const { address } = req.body;
+    try {
+        const updatedUser = await UserModel.findByIdAndUpdate(
+            id,
+            { address: address },
+            { new: true }
+        );
+        if (updatedUser) {
+            res.status(200).send({ msg: "Address updated successfully", user: updatedUser });
+        } else {
+            res.status(404).send({ msg: "User not found" });
+        }
+    } catch (e) {
+        res.status(500).send({ msg: "Failed to update address", reason: e.message });
+    }
+})
+
+userRouter.patch("/updateaddress", auth, async (req, res) => {
+    const id = req.body.userId;
+    const { address } = req.body;
+    try {
+        const updatedUser = await UserModel.findByIdAndUpdate(
+            id,
+            { address: address },
+            { new: true }
+        );
+        if (updatedUser) {
+            res.status(200).send({ msg: "Address updated successfully", user: updatedUser });
+        } else {
+            res.status(404).send({ msg: "User not found" });
+        }
+    } catch (e) {
+        res.status(500).send({ msg: "Failed to update address", reason: e.message });
     }
 })
 

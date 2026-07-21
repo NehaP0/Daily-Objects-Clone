@@ -15,11 +15,20 @@ export const ProductList = () => {
     const dispatch=useDispatch();
     const [searchParams, setSearchParam] = useSearchParams()
     const [filter ,setFilter] = useState(false)
-    let isLoading = useSelector((store)=>store.ProReducer);
+    let isLoading = useSelector((store)=>store.ProductReducer?.isLoading);
     const location = useLocation();
     useEffect(()=>{
-      console.log("useeffect is called line 20")
-     setProductData(JSON.parse(localStorage.getItem("categorypage")));
+      console.log("useeffect is called line 20", Products)
+      if (Array.isArray(Products) && Products.length > 0) {
+        setProductData(Products);
+      } else {
+        try {
+          const parsed = JSON.parse(localStorage.getItem("categorypage"));
+          setProductData(Array.isArray(parsed) ? parsed : []);
+        } catch (err) {
+          setProductData([]);
+        }
+      }
     },[Products])
   return (  isLoading ? <Loading /> : 
     <Box>
@@ -29,8 +38,8 @@ export const ProductList = () => {
               </Flex>
         <Flex direction={{base:"column-reverse",lg:"row"}}>
       <SimpleGrid className='filter-product' w={{base:"100%",lg:filter ? "80%" : "100%"}} transition={"0.5s"} id='product_grid' columns={{ base: 1, md: 2, lg: 4 }} gap={"10px"} padding={"10px"} >
-          {prodouctData.length !=0  && prodouctData.map((item)=>{
-                  return <ProductCard key={item.id} item = {item} />
+          {prodouctData.length !=0  && prodouctData.map((item, index)=>{
+                  return <ProductCard key={item._id || item.id || index} item = {item} />
               })
           }
         </SimpleGrid>

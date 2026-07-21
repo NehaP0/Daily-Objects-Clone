@@ -29,6 +29,15 @@ app.listen(8076, async () => {
   try {
     await connection;
     console.log("Connected to Mongo Atlas");
+    const productModel = require("./models/product.model");
+    const seedData = require("./config/db.json");
+    const count = await productModel.countDocuments();
+    if (count < seedData.length) {
+      console.log("Seeding products database from db.json...");
+      await productModel.deleteMany({});
+      await productModel.insertMany(seedData);
+      console.log("Database seeded successfully with all categories!");
+    }
   } catch (err) {
     console.log(err);
     console.log("Couldn't connect to Mongo Atlas");

@@ -1,4 +1,5 @@
 import axios from "axios"
+import { BASE_URL } from "../../apiConfig"
 import{
     SEARCH_PRODUCT_FAILURE,
     SEARCH_PRODUCT_REQUEST,
@@ -13,7 +14,7 @@ export const getSearchProducts = (params)=>(dispatch)=>{
       console.log(obj);
       dispatch({ type: SEARCH_PRODUCT_REQUEST });
       axios
-        .get(`https://pajamas-bonobo.cyclic.app/product/search`, obj)
+        .get(`${BASE_URL}/product/search`, obj)
         .then((res) => {
           console.log(res);
           localStorage.setItem("searchpage",JSON.stringify(res.data.Data))

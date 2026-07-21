@@ -18,17 +18,17 @@ import {addToWishlist} from "../Redux/WishlistReducer/action"
   
   export const ProductCard=({item})=> {
     const {isAuth,token} = useSelector(store => store.Loginreducer)
-    // const image1 = item.images[0];
-    // const image2 = item.images[1];
-    // const [image, setImage] = React.useState(image1);
     const Navigate = useNavigate();
     const dispatch = useDispatch();  
     const toast = useToast()
+
+    const price = Number(item.price) || 0;
+    const discountedPrice = Number(item.discounted_price) || price;
+    const discountPercent = discountedPrice > price ? Math.round(((discountedPrice - price) / discountedPrice) * 100) : 0;
     
     const handleAddToWishlist = (item) => {
       let obj = {...item}
       obj["productId"] = item["_id"];
-      console.log(obj);
       delete obj["_id"];
       if(token){
        dispatch(addToWishlist(token,obj,toast))
@@ -38,73 +38,115 @@ import {addToWishlist} from "../Redux/WishlistReducer/action"
     }
 
     const handleclick = () => {
-      Navigate(`/products/${item._id}`)
+      const pId = item._id || item.id;
+      if (pId) {
+        Navigate(`/products/${pId}`);
+      }
     }
     return (
-
-
-      <Center >
-        
+      <Center py={2}>
         <Box 
           onClick={handleclick}
           role={'group'}
-          p={0}
-          maxW={'330px'}
+          cursor="pointer"
           w={'full'}
-          bg={'#f6f6f6'}
-          mb={"20px"}
+          maxW={'320px'}
+          bg={'#ffffff'}
+          borderRadius={'16px'}
+          overflow={'hidden'}
+          boxShadow={'0 10px 25px -10px rgba(0,0,0,0.06)'}
+          border={'1px solid #f1f5f9'}
+          transition={'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)'}
+          _hover={{
+            transform: 'translateY(-6px)',
+            boxShadow: '0 20px 35px -10px rgba(32, 168, 126, 0.15)',
+            borderColor: 'rgba(32, 168, 126, 0.3)',
+          }}
           pos={'relative'}
           zIndex={1}>
           <Box
-            rounded={'lg'}
-            mt={0}
             pos={'relative'}
-            height={'300px'}
-            _after={{
-              transition: 'all .3s ease',
-              content: '""',
-              w: 'full',
-              h: 'full',
-              pos: 'absolute',
-              left: 0,
-              filter: 'blur(15px)',
-              zIndex: -1,
-            }}
-            _groupHover={{
-              _after: {
-                filter: 'blur(20px)',
-              },
-            }}>
-
-              <Flex justifyContent={"flex-end"} padding={"10px"}><AiOutlineHeart className ='button' onClick={(e) => {
-          e.stopPropagation();
-          handleAddToWishlist(item);
-        }} size={"25px"} /></Flex>
+            height={'260px'}
+            bg={'#f8fafc'}
+            overflow={'hidden'}
+          >
+            <Flex
+              pos={'absolute'}
+              top={'12px'}
+              left={'12px'}
+              right={'12px'}
+              justifyContent={'space-between'}
+              alignItems={'center'}
+              zIndex={2}
+            >
+              {discountPercent > 0 ? (
+                <Box
+                  bg={'#20a87e'}
+                  color={'white'}
+                  fontSize={'11px'}
+                  fontWeight={'700'}
+                  px={'10px'}
+                  py={'4px'}
+                  borderRadius={'999px'}
+                  letterSpacing={'0.5px'}
+                >
+                  {discountPercent}% OFF
+                </Box>
+              ) : <Box></Box>}
+              <Box
+                bg={'rgba(255,255,255,0.9)'}
+                p={'8px'}
+                borderRadius={'full'}
+                boxShadow={'0 2px 8px rgba(0,0,0,0.08)'}
+                transition={'transform 0.2s'}
+                _hover={{ transform: 'scale(1.15)', bg: '#ffffff' }}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  handleAddToWishlist(item);
+                }}
+              >
+                <AiOutlineHeart color={'#0f172a'} size={"20px"} />
+              </Box>
+            </Flex>
 
             <Image
-              height={230}
+              height={'100%'}
               width={"100%"}
               objectFit={'cover'}
-              src={item.images[0]}
-             
+              src={Array.isArray(item.images) ? item.images[0] : item.images}
+              alt={item.title}
+              transition={'transform 0.5s ease'}
+              _groupHover={{
+                transform: 'scale(1.08)',
+              }}
             />
-             
           </Box>
-          <Stack pt={5} align={'center'}>
-          
-            <Text fontSize={'medium'} fontFamily={'body'} fontWeight={500}>
+          <Stack p={4} align={'flex-start'} spacing={2}>
+            <Text 
+              fontSize={'sm'} 
+              fontWeight={600} 
+              color={'#0f172a'}
+              noOfLines={1}
+              textAlign={'left'}
+              w={'100%'}
+            >
               {item.title}
             </Text>
-            <Stack direction={'row'} align={'center'}>
-              <Text fontWeight={400} fontSize={'xl'}>
-               RS.{item.price}
+            <Stack direction={'row'} align={'center'} spacing={2}>
+              <Text fontWeight={700} fontSize={'lg'} color={'#20a87e'}>
+                ₹{price}
               </Text>
-              <Text textDecoration={'line-through'} color={'gray.600'}>
-                Rs.{item.discounted_price}
-              </Text>
+              {discountedPrice > price && (
+                <Text textDecoration={'line-through'} color={'#94a3b8'} fontSize={'sm'}>
+                  ₹{discountedPrice}
+                </Text>
+              )}
             </Stack>
-             item.offer!=undefined&&<Text fontSize={"md"} color={"red"}>{item.offer}</Text>
-           
+            {item.offer && (
+              <Text fontSize={"xs"} fontWeight={600} color={"#e11d48"}>
+                {item.offer}
+              </Text>
+            )}
           </Stack>
         </Box>
       </Center>

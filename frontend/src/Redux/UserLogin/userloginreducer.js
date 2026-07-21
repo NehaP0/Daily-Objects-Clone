@@ -1,12 +1,28 @@
 
 import * as types from "./userloginactiontype"
 
-const initlogin ={
-    isError:false,
-    isloading:false,
-    isAuth:false,
-    token:JSON.parse(localStorage.getItem("token"))||null,
-    user:JSON.parse(localStorage.getItem("user"))||[]
+const getSafeStorage = (key, fallback) => {
+  try {
+    const item = localStorage.getItem(key);
+    if (!item) return fallback;
+    try {
+      return JSON.parse(item);
+    } catch {
+      return item;
+    }
+  } catch {
+    return fallback;
+  }
+};
+
+const savedToken = getSafeStorage("token", null);
+
+const initlogin = {
+    isError: false,
+    isloading: false,
+    isAuth: !!savedToken,
+    token: savedToken,
+    user: getSafeStorage("user", [])
 }
 export const Loginreducer = (state = initlogin,action)=>{
      

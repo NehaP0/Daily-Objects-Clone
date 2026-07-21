@@ -38,10 +38,10 @@ const handleClick = (singleProduct)=>{
 }
 
 useEffect(() => {
-  console.log("useeffect is running")
-  dispatch(getSingleProduct(id))
-  console.log("useeffect ended");
-}, [singleProduct])
+  if (id) {
+    dispatch(getSingleProduct(id));
+  }
+}, [id, dispatch])
   return (
     <Box>
       <Navbar/>
@@ -111,7 +111,7 @@ useEffect(() => {
         {
           singleProduct[0].details!=undefined&&singleProduct[0].details.map((item,i)=>{
                if(i%2 == 0){
-                return <Flex w={"80%"} m={"auto"} direction={{base:"column-reverse",xl:"row"}}>
+                return <Flex key={i} w={"80%"} m={"auto"} direction={{base:"column-reverse",xl:"row"}}>
                    <Flex padding={"0 10px"} width={{base:"80%",xl:"60%"}} h={"500px"} justifyContent={"center"} alignItems={"center"} bgColor={"#f7f7f7"} color={"black"}>
                      <Text fontSize={"2xl"} fontWeight={"bold"}>{item.content}</Text>
                    </Flex>
@@ -120,7 +120,7 @@ useEffect(() => {
                    </Flex>
                 </Flex>
                }else{
-                return <Flex w={"80%"} m={"auto"} direction={{base:"column",xl:"row"}}>
+                return <Flex key={i} w={"80%"} m={"auto"} direction={{base:"column",xl:"row"}}>
                 <Flex padding={"0 10px"} width={{base:"80%",xl:"40%"}} h={"500px"} justifyContent={"center"} alignItems={"center"} bgColor={"#20a87e"} color={"white"}>
                  <Text fontSize={"4xl"} fontWeight={"bold"}>{item.heading}</Text>
                 </Flex>

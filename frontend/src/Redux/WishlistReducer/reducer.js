@@ -6,9 +6,18 @@ import {
     GET_WISHLIST_SUCCESS
   } from "./actionTypes"
 
-  const initialState = {
+const getSafeArray = (key) => {
+  try {
+    const item = JSON.parse(localStorage.getItem(key));
+    return Array.isArray(item) ? item : [];
+  } catch {
+    return [];
+  }
+};
+
+const initialState = {
     isLoading : false,
-    products : JSON.parse(localStorage.getItem("Wishlist"))||[],
+    products : getSafeArray("Wishlist"),
     isError : false
 }
 

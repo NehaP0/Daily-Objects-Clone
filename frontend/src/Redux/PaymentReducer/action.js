@@ -1,4 +1,5 @@
 import axios from "axios"
+import { BASE_URL } from "../../apiConfig"
 import{
   EDIT_PAYMENT_REQUEST,EDIT_PAYMENT_SUCCESS,EDIT_PAYMENT_FAILURE
 } from "./actionTypes"
@@ -11,7 +12,7 @@ export const UpdatePaymentAction = (token, id)=>(dispatch)=>{
   dispatch({type:  EDIT_PAYMENT_REQUEST})
   return axios({
     method: 'patch',
-    url: `https://pajamas-bonobo.cyclic.app/cart/update/${id}`,
+    url: `${BASE_URL}/cart/update/${id}`,
     data: {
       payment : true
     },

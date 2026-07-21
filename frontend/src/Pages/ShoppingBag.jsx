@@ -2,9 +2,14 @@ import React, { useEffect, useState } from  'react'
 import styles from "../Styling/bag.module.css"
 
 import {
+    Box,
+    Text,
+    Flex,
+    VStack,
+    HStack,
+    IconButton,
     Input,
     Button,
-    div,
     useDisclosure,   
     Center,
     Modal,
@@ -14,7 +19,9 @@ import {
     ModalFooter,
     ModalBody,
     ModalCloseButton,
+    Icon
   } from '@chakra-ui/react'  
+import { FaShoppingBag, FaArrowRight } from "react-icons/fa"
 
 import { useDispatch, useSelector } from 'react-redux'
 import { addAddressAction } from "../Redux/AddressReducer/action"
@@ -33,8 +40,8 @@ const ShoppingBag = () => {
 
     const {user,token} = useSelector(store=>store.Loginreducer)
 
-    const userID = user[0]._id
-    const userAddress = user[0].address
+    const userID = Array.isArray(user) && user.length > 0 ? user[0]._id : (user?._id || null);
+    const userAddress = Array.isArray(user) && user.length > 0 ? user[0]?.address : (user?.address || null);
 
     const {allcartProducts} = useSelector(store=>store.CartReducer)
 
@@ -77,8 +84,10 @@ const ShoppingBag = () => {
     
     
     useEffect(()=>{
-      dispatch(GetAllCartProductsAction(token,userID))
-    },[])              
+      if (userID) {
+        dispatch(GetAllCartProductsAction(token,userID))
+      }
+    },[userID])              
 
     const HandleQty = (id, val)=>{
             console.log(val)
@@ -100,11 +109,16 @@ const ShoppingBag = () => {
         let disc=0
         let grand=0
         let WODiscount = 0
-        for(let i=0; i<allcartProducts.length; i++){
-            Qty+=allcartProducts[i].quantity
-            disc+= (allcartProducts[i].discounted_price * allcartProducts[i].quantity) - (allcartProducts[i].price * allcartProducts[i].quantity)
-            grand += allcartProducts[i].price * allcartProducts[i].quantity
-            WODiscount += allcartProducts[i].discounted_price * allcartProducts[i].quantity
+        if (Array.isArray(allcartProducts)) {
+            for(let i=0; i<allcartProducts.length; i++){
+                const q = Number(allcartProducts[i].quantity) || 1;
+                const p = Number(allcartProducts[i].price) || 0;
+                const dp = Number(allcartProducts[i].discounted_price) || p;
+                Qty += q;
+                disc += (dp * q) - (p * q);
+                grand += p * q;
+                WODiscount += dp * q;
+            }
         }
         settotalqty(Qty)
         settotaldiscount(disc)
@@ -115,9 +129,14 @@ const ShoppingBag = () => {
     
        
     const PostIt = (address) =>{
-        dispatch(addAddressAction(token,address, user[0]._id))
-        .then((res)=>Navigate("/CheckoutPage"))
-        .catch((err)=>alert(err));
+        localStorage.setItem("userAddress", JSON.stringify(address));
+        if (userID) {
+          dispatch(addAddressAction(token, address, userID))
+          .then((res)=>Navigate("/CheckoutPage"))
+          .catch((err)=>Navigate("/CheckoutPage"));
+        } else {
+          Navigate("/CheckoutPage");
+        }
     }
   
   
@@ -139,142 +158,288 @@ const ShoppingBag = () => {
     
 
   return (
-    <div>
+    <Box bg="#fafafa" minH="100vh">
       <Navbar/>
-        <div>
-            <img src="https://images.dailyobjects.com/marche/assets/images/other/offer-baners-updated-homepage-desktop.jpg?tr=cm-pad_crop,v-2,dpr-1" alt="" />
-        </div>
- 
- 
-        <div>
-            <h1>SHOPPING BAG</h1>           
-            <div id={styles.sidetoside}>  {/* flex */}
-                <div id={styles.left}>
-                    <div id={styles.leftInside}>
-                        {allcartProducts.length!=0&&allcartProducts.map((item)=><div key={item._id} id={styles.indiDiv}> {/* flex */}
-                                    <div id={styles.imageDiv}>
-                                        <img src={item.images[0]} alt="ProdImage" />
-                                    </div>
-                                    <div id={styles.ProdDeets}>
-                                        <p>{item.title}</p>
-                                        <div style={{display:"flex", justifyContent:"space-between", width:"50%", marginTop:"10px"}}>
-                                            <p>{`Rs. ${item.price * item.quantity}`}</p>
-                                            <p style={{textDecoration: "line-through"}}>{item.discounted_price * item.quantity}</p>
-                                        </div>
-                                        <div style={{display:"flex",justifyContent:"space-between", marginTop:"10px"}}>
-                                          <div>
-                                            <button disabled={item.quantity==1} onClick={()=>HandleQty(item._id, item.quantity-1)}>-</button>
-                                            <button>{item.quantity}</button>
-                                            <button  onClick={()=>HandleQty(item._id, item.quantity+1)}>+</button>
-                                          </div>
-                                          <div>
-                                            <button style={{border:"none"}} onClick={()=>HandleDelete(item._id)}><img src="https://images.dailyobjects.com/marche/icons/bin.png?tr=cm-pad_resize,v-2,w-20,dpr-1" alt="delete" /></button>
-                                          </div>
-                                        </div>
-                                    </div>
-                            </div>
-                        )}
-                    </div>
+      <Box maxW="1200px" mx="auto" px={4} py={8}>
+        {/* Progress step bar */}
+        <Flex justify="center" align="center" gap={4} mb={8}>
+          <Flex align="center" gap={2} color="#20a87e" fontWeight="700">
+            <Box bg="#20a87e" color="white" borderRadius="full" w="24px" h="24px" display="flex" alignItems="center" justifyContent="center" fontSize="12px">1</Box>
+            <Text fontSize="sm">Shopping Bag</Text>
+          </Flex>
+          <Box h="2px" w="40px" bg="#cbd5e1" />
+          <Flex align="center" gap={2} color="#94a3b8" fontWeight="600">
+            <Box bg="#e2e8f0" color="#64748b" borderRadius="full" w="24px" h="24px" display="flex" alignItems="center" justifyContent="center" fontSize="12px">2</Box>
+            <Text fontSize="sm">Checkout</Text>
+          </Flex>
+          <Box h="2px" w="40px" bg="#cbd5e1" />
+          <Flex align="center" gap={2} color="#94a3b8" fontWeight="600">
+            <Box bg="#e2e8f0" color="#64748b" borderRadius="full" w="24px" h="24px" display="flex" alignItems="center" justifyContent="center" fontSize="12px">3</Box>
+            <Text fontSize="sm">Payment</Text>
+          </Flex>
+        </Flex>
 
-                </div>
-                <div id={styles.right}> {/* right */}
-                    <div id={styles.rightInside}>
-                        <div className={styles.flexIt} id={styles.bluediv}>{/* blue, flex */}
-                            <div class={styles.first}>
-                                <div className={styles.icon}><img src="https://images.dailyobjects.com/marche/assets/images/other/gift-icon.png?tr=cm-pad_resize,v-2" alt="gift" /></div>
-                                <div><h2>MAKE IT A GIFT INR 500</h2></div>
-                                <div className={styles.icon}><img src="https://images.dailyobjects.com/marche/assets/images/other/information-icon-updated-02.png?tr=cm-pad_resize,v-2,w-14,h-14,dpr-1" alt="info" /></div>
-                            </div>     
-                            <div><button>ADD+</button></div>
-                        </div>
-                        <div className={styles.flexIt}>
-                            <div class={styles.first}>
-                                <div className={styles.icon}><img src="https://images.dailyobjects.com/marche/assets/images/other/offers-icon-324-280px.png?tr=cm-pad_resize,v-2" alt="coupon" /></div>
-                                <div><h2>COUPONS & OFFERS</h2><p style={{display:"inline"}}>SUMMERSALE</p><p>Coupon Applied</p></div>
-                            </div>
-                            <div><select name="" id=""><option value=""></option></select></div>
-                        </div>
-                        <div className={styles.flexIt}>
-                            <div class={styles.first}>
-                                <div className={styles.icon}><img src="https://images.dailyobjects.com/marche/assets/images/other/gift-card-icon-2024-1388.png?tr=cm-pad_resize,v-2" alt="gift card" /></div>
-                                <div><h2>REDEEM GIFT CARD</h2></div>
-                            </div>
-                            <div><select name="" id=""><option value=""></option></select></div>
-                        </div>
-                        <div>
-                            <h2>ORDER SUMMARY</h2>
-                            <div className={styles.flexIt}> {/* flex */}
-                                <p>{`Item Total (${totalqty} Items)`}</p>
-                                <p>{`Rs. ${priceWODiscount}`}</p>
-                            </div>
-                            <div className={styles.flexIt} style={{color:"rgb(231, 125, 143)"}}> {/* flex */}
-                                <p>Discount</p>
-                                <p>{`Rs. ${totaldiscount}`}</p>
-                            </div>
-                            <div className={styles.flexIt}> {/* flex */}
-                                <p>Shipping</p>
-                                <p style={{color:"rgb(231, 125, 143)"}}>FREE</p>
-                            </div>
-                        </div>
-                        <div>
-                            <div className={styles.flexIt}> {/* flex */}
-                                <p>Grand Total</p>
-                                <p>{`Rs. ${grandtotal}`}</p>
-                            </div>
-                            <div className={styles.flexIt}> {/* flex */}
-                                <p>(Inclusive of Taxes)</p>
-                                <p style={{color:"rgb(231, 125, 143)"}}>{`You Saved Rs.${totaldiscount}`}</p>
-                            </div>
-                        </div>
-                        <Button mt={3} ref={btnRef} onClick={HandleCheckout} style={{backgroundColor:"#20a87e"}}>
-                            CHECKOUT
-                        </Button>
+        <Text fontSize="3xl" fontWeight="800" textAlign="center" mb={8} color="#0f172a" letterSpacing="-0.02em">
+          MY SHOPPING BAG ({totalqty})
+        </Text>
 
-                    </div>
-                </div>
-            </div>
-        </div>
+        <Flex direction={{ base: "column", lg: "row" }} gap={8} justify="center" align="flex-start">
+          {/* Cart Items List */}
+          <Box flex="1" w="100%">
+            {allcartProducts.length === 0 ? (
+              <Center 
+                flexDirection="column" 
+                py="16" 
+                px="6"
+                bg="white" 
+                borderRadius="24px" 
+                border="1px solid #f1f5f9" 
+                boxShadow="0 10px 30px -10px rgba(0,0,0,0.06)"
+                textAlign="center"
+              >
+                <Box 
+                  bg="#e6f7f2" 
+                  w="80px" 
+                  h="80px" 
+                  borderRadius="full" 
+                  display="flex" 
+                  alignItems="center" 
+                  justifyContent="center" 
+                  mb={5}
+                >
+                  <Icon as={FaShoppingBag} w="36px" h="36px" color="#20a87e" />
+                </Box>
+                <Text fontSize="2xl" fontWeight="800" color="#0f172a" mb={2}>
+                  Your Shopping Bag is empty
+                </Text>
+                <Text color="#64748b" maxW="400px" mb={6} fontSize="sm">
+                  Looks like you haven't added anything to your bag yet. Explore our handcrafted collections to find your next essential.
+                </Text>
 
-        <Modal
-          onClose={onClose}
-          finalFocusRef={btnRef}
-          isOpen={isOpen}
-          scrollBehavior={scrollBehavior}
-        >
-          <ModalOverlay />
-          <ModalContent>
-            <ModalHeader>ADD NEW ADDRESS</ModalHeader>
-            <ModalCloseButton />
-            <ModalBody>
+                {/* Quick Category Chips */}
+                <HStack spacing={2} mb={8} flexWrap="wrap" justify="center">
+                  <Button 
+                    size="xs" 
+                    borderRadius="full" 
+                    bg="#f8fafc" 
+                    border="1px solid #e2e8f0" 
+                    color="#475569"
+                    _hover={{ bg: "#e6f7f2", color: "#20a87e", borderColor: "#20a87e" }}
+                    onClick={() => Navigate("/products?category=Watch")}
+                  >
+                    Watchbands
+                  </Button>
+                  <Button 
+                    size="xs" 
+                    borderRadius="full" 
+                    bg="#f8fafc" 
+                    border="1px solid #e2e8f0" 
+                    color="#475569"
+                    _hover={{ bg: "#e6f7f2", color: "#20a87e", borderColor: "#20a87e" }}
+                    onClick={() => Navigate("/products?category=Messenger+Bags")}
+                  >
+                    Messenger Bags
+                  </Button>
+                  <Button 
+                    size="xs" 
+                    borderRadius="full" 
+                    bg="#f8fafc" 
+                    border="1px solid #e2e8f0" 
+                    color="#475569"
+                    _hover={{ bg: "#e6f7f2", color: "#20a87e", borderColor: "#20a87e" }}
+                    onClick={() => Navigate("/products?category=desk")}
+                  >
+                    Desk Essentials
+                  </Button>
+                  <Button 
+                    size="xs" 
+                    borderRadius="full" 
+                    bg="#f8fafc" 
+                    border="1px solid #e2e8f0" 
+                    color="#475569"
+                    _hover={{ bg: "#e6f7f2", color: "#20a87e", borderColor: "#20a87e" }}
+                    onClick={() => Navigate("/products?category=Pedal+Backpack")}
+                  >
+                    Backpacks
+                  </Button>
+                </HStack>
+
+                <Button 
+                  bg="#20a87e" 
+                  color="white" 
+                  size="lg" 
+                  px={8}
+                  borderRadius="14px" 
+                  _hover={{ bg: "#1b8e6b", transform: "translateY(-2px)" }}
+                  transition="all 0.2s"
+                  rightIcon={<FaArrowRight />}
+                  onClick={() => Navigate("/products")}
+                >
+                  START SHOPPING
+                </Button>
+              </Center>
+            ) : (
+              <VStack spacing={4} align="stretch">
+                {allcartProducts.map((item, idx) => {
+                  const p = Number(item.price) || 0;
+                  const dp = Number(item.discounted_price) || p;
+                  return (
+                    <Flex 
+                      key={item._id || item.id || idx}
+                      bg="white"
+                      p={5}
+                      borderRadius="20px"
+                      boxShadow="0 10px 25px -10px rgba(0,0,0,0.05)"
+                      border="1px solid #f1f5f9"
+                      align="center"
+                      gap={5}
+                      direction={{ base: "column", sm: "row" }}
+                    >
+                      <Box w={{ base: "100%", sm: "110px" }} h="110px" bg="#f8fafc" borderRadius="12px" overflow="hidden" flexShrink={0}>
+                        <img 
+                          src={Array.isArray(item.images) ? item.images[0] : item.images} 
+                          alt={item.title} 
+                          style={{ width: "100%", height: "100%", objectFit: "cover" }}
+                        />
+                      </Box>
+                      <Box flex="1" w="100%">
+                        <Text fontWeight="700" fontSize="md" color="#0f172a" noOfLines={1}>{item.title}</Text>
+                        <Flex align="center" gap={3} mt={1}>
+                          <Text fontWeight="800" fontSize="md" color="#20a87e">₹{p * item.quantity}</Text>
+                          {dp > p && (
+                            <Text textDecoration="line-through" color="#94a3b8" fontSize="sm">₹{dp * item.quantity}</Text>
+                          )}
+                        </Flex>
+
+                        <Flex justify="space-between" align="center" mt={4}>
+                          <HStack spacing={1} bg="#f1f5f9" borderRadius="10px" p={1}>
+                            <Button 
+                              size="xs" 
+                              variant="ghost" 
+                              isDisabled={item.quantity <= 1} 
+                              onClick={() => HandleQty(item._id, item.quantity - 1)}
+                              w="28px" h="28px"
+                            >-</Button>
+                            <Text px={2} fontWeight="700" fontSize="sm">{item.quantity}</Text>
+                            <Button 
+                              size="xs" 
+                              variant="ghost" 
+                              onClick={() => HandleQty(item._id, item.quantity + 1)}
+                              w="28px" h="28px"
+                            >+</Button>
+                          </HStack>
+                          <IconButton 
+                            icon={<img src="https://images.dailyobjects.com/marche/icons/bin.png?tr=cm-pad_resize,v-2,w-20,dpr-1" alt="delete" style={{ width: "18px" }} />}
+                            variant="ghost" 
+                            size="sm" 
+                            onClick={() => HandleDelete(item._id)}
+                            aria-label="Remove item"
+                            _hover={{ bg: "#ffe4e6" }}
+                          />
+                        </Flex>
+                      </Box>
+                    </Flex>
+                  );
+                })}
+              </VStack>
+            )}
+          </Box>
+
+          {/* Order Summary Sidebar */}
+          <Box 
+            bg="white" 
+            p={6} 
+            borderRadius="20px" 
+            boxShadow="0 10px 30px -10px rgba(0,0,0,0.06)" 
+            border="1px solid #f1f5f9"
+            w={{ base: "100%", lg: "380px" }}
+          >
+            <Text fontSize="lg" fontWeight="800" color="#0f172a" mb={4} borderBottom="2px solid #20a87e" pb={2} display="inline-block">
+              ORDER SUMMARY
+            </Text>
+            <VStack spacing={3} align="stretch" mb={6}>
+              <Flex justify="space-between" fontSize="sm" color="#475569">
+                <Text>Item Subtotal ({totalqty} Items)</Text>
+                <Text fontWeight="600">₹{priceWODiscount}</Text>
+              </Flex>
+              <Flex justify="space-between" fontSize="sm" color="#20a87e" fontWeight="600">
+                <Text>Discount</Text>
+                <Text>- ₹{totaldiscount}</Text>
+              </Flex>
+              <Flex justify="space-between" fontSize="sm" color="#475569">
+                <Text>Shipping</Text>
+                <Text color="#20a87e" fontWeight="700">FREE</Text>
+              </Flex>
+              <Box h="1px" bg="#e2e8f0" my={2} />
+              <Flex justify="space-between" fontSize="md" fontWeight="800" color="#0f172a">
+                <Text>Grand Total</Text>
+                <Text color="#20a87e">₹{grandtotal}</Text>
+              </Flex>
+              {totaldiscount > 0 && (
+                <Text fontSize="xs" fontWeight="700" color="#20a87e" textAlign="right">
+                  Total Savings: ₹{totaldiscount}
+                </Text>
+              )}
+            </VStack>
+
+            <Button 
+              ref={btnRef} 
+              bg="#20a87e" 
+              color="white" 
+              size="lg" 
+              w="100%" 
+              borderRadius="12px"
+              _hover={{ bg: "#1b8e6b", transform: "translateY(-2px)" }}
+              transition="all 0.2s"
+              onClick={HandleCheckout}
+              isDisabled={allcartProducts.length === 0}
+            >
+              PROCEED TO CHECKOUT
+            </Button>
+          </Box>
+        </Flex>
+      </Box>
+
+      <Modal
+        onClose={onClose}
+        finalFocusRef={btnRef}
+        isOpen={isOpen}
+        scrollBehavior={scrollBehavior}
+      >
+        <ModalOverlay />
+        <ModalContent>
+          <ModalHeader>ADD NEW ADDRESS</ModalHeader>
+          <ModalCloseButton />
+          <ModalBody>
+            <form onSubmit={HandleSubmit}>      
+              <Input variant = 'flushed' label=''  m = {3} id='first-name' placeholder='Full name *' onChange={(e)=>setname(e.target.value)}/>
+              <Input variant = 'flushed' label='' m = {3} id='last-name' placeholder='Mobile *'  onChange={(e)=>setmobile(e.target.value)}/>
+              <Input variant = 'flushed' label='' m = {3} id='last-name' placeholder='Email Address *'  onChange={(e)=>setemail(e.target.value)}/>
+              <div display='flex' justifyContent="space-evenly">
+                <Input variant = 'flushed' label='' m = {3} id='last-name' placeholder='Pincode *'  onChange={(e)=>setpin(e.target.value)}/>
+                <Input variant = 'flushed' label='' m = {3} id='last-name' placeholder='City *' onChange={(e)=>setcity(e.target.value)} />
+                <Input variant = 'flushed' label='' m = {3} id='last-name' placeholder='State *'  onChange={(e)=>setstate(e.target.value)}/>
+                <Input variant = 'flushed' label='' m = {3} id='last-name' placeholder='Country *'  onChange={(e)=>setcountry(e.target.value)}/>
+              </div>
+              <Input variant = 'flushed' label='' m = {3} id='last-name' placeholder='Flat No/Building, Street Name *'  onChange={(e)=>setbuilding(e.target.value)}/>
+              <Input variant = 'flushed' label='' m = {3} id='last-name' placeholder='Area/Locality *'  onChange={(e)=>setarea(e.target.value)}/>
+              <Input variant = 'flushed' label='' m = {3} id='last-name' placeholder='Landmark' onChange={(e)=>setlandmark(e.target.value)}/>
+              <Input variant = 'flushed' label='' m = {3} id='last-name' placeholder='GSTIN' onChange={(e)=>setgstin(e.target.value)}/>
               
-      <form onSubmit={HandleSubmit}>      
-      <Input variant = 'flushed' label=''  m = {3} id='first-name' placeholder='Full name *' onChange={(e)=>setname(e.target.value)}/>
-      <Input variant = 'flushed' label='' m = {3} id='last-name' placeholder='Mobile *'  onChange={(e)=>setmobile(e.target.value)}/>
-      <Input variant = 'flushed' label='' m = {3} id='last-name' placeholder='Email Address *'  onChange={(e)=>setemail(e.target.value)}/>
-      <div display='flex' justifyContent="space-evenly">
-        <Input variant = 'flushed' label='' m = {3} id='last-name' placeholder='Pincode *'  onChange={(e)=>setpin(e.target.value)}/>
-        <Input variant = 'flushed' label='' m = {3} id='last-name' placeholder='City *' onChange={(e)=>setcity(e.target.value)} />
-        <Input variant = 'flushed' label='' m = {3} id='last-name' placeholder='State *'  onChange={(e)=>setstate(e.target.value)}/>
-        <Input variant = 'flushed' label='' m = {3} id='last-name' placeholder='Country *'  onChange={(e)=>setcountry(e.target.value)}/>
-      </div>
-      <Input variant = 'flushed' label='' m = {3} id='last-name' placeholder='Flat No/Building, Street Name *'  onChange={(e)=>setbuilding(e.target.value)}/>
-      <Input variant = 'flushed' label='' m = {3} id='last-name' placeholder='Area/Locality *'  onChange={(e)=>setarea(e.target.value)}/>
-      <Input variant = 'flushed' label='' m = {3} id='last-name' placeholder='Landmark' onChange={(e)=>setlandmark(e.target.value)}/>
-      <Input variant = 'flushed' label='' m = {3} id='last-name' placeholder='GSTIN' onChange={(e)=>setgstin(e.target.value)}/>
-      
-      <p>PS. Your information is safe with us, No spam.</p>
+              <p>PS. Your information is safe with us, No spam.</p>
 
-    <Center>
-    <ModalFooter>
-        <Button type="submit" >ADD ADDRESS</Button>
-    </ModalFooter>
-    </Center>
-    </form>
-    </ModalBody>
-    </ModalContent>
-</Modal>
-     <Footer/>
-    </div>
+              <Center>
+                <ModalFooter>
+                  <Button type="submit">ADD ADDRESS</Button>
+                </ModalFooter>
+              </Center>
+            </form>
+          </ModalBody>
+        </ModalContent>
+      </Modal>
+
+      <Footer/>
+    </Box>
   )
 }
 

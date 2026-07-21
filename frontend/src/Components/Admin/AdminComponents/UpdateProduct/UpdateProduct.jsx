@@ -14,6 +14,7 @@ import {
   Input,
 } from "@chakra-ui/react";
 import axios from "axios";
+import { BASE_URL } from "../../../../apiConfig";
 
 function UpdateProduct({ id, getData }) {
   let _id = id;
@@ -60,7 +61,7 @@ function UpdateProduct({ id, getData }) {
     console.log(id);
     axios({
       method: "PATCH",
-      url: `https://pajamas-bonobo.cyclic.app/product/update/${_id}`,
+      url: `${BASE_URL}/product/update/${_id}`,
       data: newData,
       headers: {
         Authorization: `${localStorage.getItem("adminToken")}`,

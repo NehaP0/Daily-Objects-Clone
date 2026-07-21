@@ -17,7 +17,7 @@ export const Categorypage = ()=> {
  
 
   useEffect(() => {
-    dispatch(getProducts({category: []}))
+    dispatch(getProducts());
   }, []);
 
   return(

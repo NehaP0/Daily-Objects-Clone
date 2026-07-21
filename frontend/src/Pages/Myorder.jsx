@@ -15,8 +15,11 @@ const Myorder = () => {
         setState(value)
     }
     useEffect(()=>{
-        dispatch(GetAllCartProductsAction(token, user[0]._id))
-    },[state])
+        const uId = Array.isArray(user) && user.length > 0 ? user[0]._id : (user?._id || null);
+        if (uId) {
+            dispatch(GetAllCartProductsAction(token, uId));
+        }
+    },[state, user, token, dispatch])
 
 
     console.log(allcartProducts)

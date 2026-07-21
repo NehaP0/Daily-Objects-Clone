@@ -15,6 +15,7 @@ import {
   Radio,
 } from "@chakra-ui/react";
 import axios from "axios";
+import { BASE_URL } from "../../../../apiConfig";
 const OrderPage = () => {
   const [data, setData] = useState([]);
   const [value, setValue] = useState(false);
@@ -30,7 +31,7 @@ const OrderPage = () => {
 
   const getData = () => {
     axios
-      .get(`https://pajamas-bonobo.cyclic.app/adminorder/`, config)
+      .get(`${BASE_URL}/adminorder/`, config)
       .then((res) => {
         setData(res.data.data);
       })
@@ -41,7 +42,7 @@ const OrderPage = () => {
   const handleChangePayment = (_id, newData) => {
     axios({
       method: "PATCH",
-      url: `https://pajamas-bonobo.cyclic.app/adminorder/update/${_id}`,
+      url: `${BASE_URL}/adminorder/update/${_id}`,
       data: newData,
       headers: {
         Authorization: `${localStorage.getItem("adminToken")}`,

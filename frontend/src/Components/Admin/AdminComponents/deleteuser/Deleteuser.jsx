@@ -13,6 +13,7 @@ import {
   useToast,
 } from "@chakra-ui/react";
 import axios from "axios";
+import { BASE_URL } from "../../../../apiConfig";
 
 function DeleteUser({ id, getData }) {
   let _id = id;
@@ -43,7 +44,7 @@ function DeleteUser({ id, getData }) {
     // console.log(_id)
     // window.location.reload();
     axios
-      .delete(`https://pajamas-bonobo.cyclic.app/user/delete/${_id}`, {
+      .delete(`${BASE_URL}/user/delete/${_id}`, {
         headers: {
           Authorization: `${localStorage.getItem("adminToken")}`,
         },

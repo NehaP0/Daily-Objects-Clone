@@ -3,6 +3,7 @@ import Navbar from "../../Navbar";
 import { useEffect, useState } from "react";
 import { Box, SimpleGrid } from "@chakra-ui/react";
 import axios from "axios";
+import { BASE_URL } from "../../../../apiConfig";
 import UserCard from "./usercard";
 
 import Spinners from "./Spinner";
@@ -22,7 +23,7 @@ const Users = () => {
     try {
       let res = await axios({
         method: "GET",
-        url: `https://pajamas-bonobo.cyclic.app/user/`,
+        url: `${BASE_URL}/user/`,
         headers: {
           Authorization: `${localStorage.getItem("adminToken")}`,
         },

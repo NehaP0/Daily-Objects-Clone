@@ -4,9 +4,18 @@ import{
     SEARCH_PRODUCT_SUCCESS
 } from "./ActionType";
 
+const getSafeArray = (key) => {
+  try {
+    const item = JSON.parse(localStorage.getItem(key));
+    return Array.isArray(item) ? item : [];
+  } catch {
+    return [];
+  }
+};
+
 const initialState = {
     isLoading : false,
-    products : JSON.parse(localStorage.getItem("searchpage"))||[],
+    products : getSafeArray("searchpage"),
     isError : false
 }
 

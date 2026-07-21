@@ -1,4 +1,5 @@
 import axios from "axios"
+import { BASE_URL } from "../../apiConfig"
 
 import * as types from "./userloginactiontype"
 
@@ -6,7 +7,7 @@ import * as types from "./userloginactiontype"
 
     dispatch({type:types.GETLOGINDATAREQUEST})
 
-    return axios.post("https://pajamas-bonobo.cyclic.app/user/login",data)
+    return axios.post(`${BASE_URL}/user/login`,data)
     .then(r=>dispatch({type:types.GETLOGINDATASUCCESS,payload:r.data}))
     .catch(e=>dispatch({type:types.GETLOGINDATAFALIURE}))
     }

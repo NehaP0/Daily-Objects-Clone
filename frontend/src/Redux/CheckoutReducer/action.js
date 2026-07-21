@@ -1,5 +1,6 @@
 import { GETUSERFALIURE,GETUSERPENDING, GETUSERSUCCESS } from "./actiontype"
 import axios from "axios"
+import { BASE_URL } from "../../apiConfig"
 
   export const getuserAction = (token,userId)=>(dispatch)=>{
     console.log("getuserAction called");
@@ -9,7 +10,7 @@ import axios from "axios"
     };
     return axios({
       method: 'GET',
-      url: `https://pajamas-bonobo.cyclic.app/user/`,
+      url: `${BASE_URL}/user/`,
       data: {userId},
       headers: headers
     })

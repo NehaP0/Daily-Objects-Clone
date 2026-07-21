@@ -5,8 +5,8 @@ const HoverCardSubMenu = (props) => {
   const menuarr = props.menuarr;
   return (
     <Box width="100%" textAlign="left" marginTop="8%">
-      {menuarr.map((ele) => (
-        <h2>{ele.name}</h2>
+      {menuarr.map((ele, index) => (
+        <h2 key={ele.name || index}>{ele.name}</h2>
       ))}
     </Box>
   );

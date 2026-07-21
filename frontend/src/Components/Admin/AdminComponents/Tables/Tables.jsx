@@ -12,13 +12,14 @@ import {
 import "./Tables.css"
 import React, { useEffect, useState } from 'react'
 import axios from 'axios';
+import { BASE_URL } from '../../../../apiConfig';
 
 const Tables = () => {
   const [data, setData] = useState([]);
 
   let length;
   const getData = () => {
-    axios.get(`https://awful-pear-bedclothes.cyclic.app/api/admin/users`).then((res) => {
+    axios.get(`${BASE_URL}/user`).then((res) => {
         // console.log(res)
         setData(res.data.users) 
         length=res.length;

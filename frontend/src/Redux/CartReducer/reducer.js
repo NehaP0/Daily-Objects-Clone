@@ -9,10 +9,19 @@ import{
     UPDATE_CART_PRODUCT_SUCCESS
 } from "./actionTypes" 
 
-  const initialState = {
+const getSafeArray = (key) => {
+  try {
+    const item = JSON.parse(localStorage.getItem(key));
+    return Array.isArray(item) ? item : [];
+  } catch {
+    return [];
+  }
+};
+
+const initialState = {
     isLoading : false,
-    products : JSON.parse(localStorage.getItem("Cart"))||[],
-    singleProduct : JSON.parse(localStorage.getItem("singleproduct"))||[],
+    products : getSafeArray("Cart"),
+    singleProduct : getSafeArray("singleproduct"),
     allcartProducts:[],
     isError : false
 }
@@ -31,7 +40,8 @@ export const reducer = (state = initialState,{type,payload})=>{
     case ADD_CART_SUCCESS : return {
         ...state,
         isLoading : false,
-        products : [...state.products,payload]
+        products : [...state.products, payload],
+        allcartProducts : payload ? [...state.allcartProducts, payload] : state.allcartProducts
     }
     
     case GET_CART_PRODUCTS_SUCCESS : return {...state, isLoading :false,isError : false, allcartProducts: payload}

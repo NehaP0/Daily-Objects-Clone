@@ -46,7 +46,7 @@ productRouter.get("/", async (req, res) => {
         queryobj["color"] = query.color;
     }
     if(query.category){
-        queryobj["category"] = query.category;
+        queryobj["category"] = { $regex: query.category, $options: 'i' };
     }
     if(query["price_gt"]!=undefined&&query["price_lt"]!=undefined){
         $and.push({"$expr" : {"$gt" : [{"$toInt" :"$price"} , +query.price_gt]}})
@@ -54,7 +54,7 @@ productRouter.get("/", async (req, res) => {
         queryobj["$and"] = $and;
     }
     try {
-        const data = await productModel.find()
+        const data = await productModel.find(queryobj).sort(sortobj)
         res.send({ Data: data});
     } catch (e) {
         res.send({msg:e.message})
@@ -94,14 +94,15 @@ productRouter.patch("/update/:id", async (req, res) => {
     }
 })
 
-productRouter.delete("/delete/:id", async (req, res) => {
-    const id = req.params.id;
+productRouter.get("/seed", async (req, res) => {
     try {
-        await productModel.findByIdAndDelete(id);
-        res.send({ msg: "Product Deleted" })
+        const seedData = require("../config/db.json");
+        await productModel.deleteMany({});
+        await productModel.insertMany(seedData);
+        res.send({ msg: "Database seeded successfully with all categories!", count: seedData.length });
     } catch (e) {
-        res.send({ "msg": e.message })
+        res.status(500).send({ msg: e.message });
     }
-})
+});
 
 module.exports = productRouter

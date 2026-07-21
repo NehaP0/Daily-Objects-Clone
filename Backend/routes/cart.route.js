@@ -61,6 +61,20 @@ cartRoute.delete("/delete/:id", async (req, res) => {
     } catch (e) {
         res.send({ "msg": e.message })
     }
-})
+});
+
+cartRoute.delete("/clear", async (req, res) => {
+    const userId = req.body && req.body.userId;
+    try {
+        if (userId) {
+            await cartModel.deleteMany({ userId });
+        } else {
+            await cartModel.deleteMany({});
+        }
+        res.send({ msg: "Cart cleared" });
+    } catch (e) {
+        res.status(500).send({ msg: e.message });
+    }
+});
 
 module.exports = cartRoute
