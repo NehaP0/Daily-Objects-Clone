@@ -79,7 +79,7 @@ export const GetAllCartProductsAction = (token,id) => (dispatch)  => {
     headers
   })
   .then((res) => {
-                  if(res.data.Data==undefined){
+                  if(res.data.Data === undefined){
                     dispatch({ type: GET_CART_PRODUCTS_SUCCESS,  payload: []})
                   }else{
                   dispatch({ type: GET_CART_PRODUCTS_SUCCESS,  payload: res.data.Data})}})

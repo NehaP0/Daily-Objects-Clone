@@ -1,4 +1,3 @@
-import React from 'react'
 import axios from "axios"
 import { BASE_URL } from "../../apiConfig"
 import * as types from "./usersignupactiontype"

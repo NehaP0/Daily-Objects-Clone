@@ -22,7 +22,7 @@ export const addAddressAction = (token,addressobj, id) => (dispatch) =>{
     .then((res)=>{
         console.log(res);
         dispatch({type: POST_ADDRESS_SUCCESS})
-        if(res.data.user!=undefined){
+        if(res.data.user !== undefined){
         localStorage.setItem("user",JSON.stringify([res.data.user]))
         }
     })
